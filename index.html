@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeReply AI · 外贸客服智能回复工具</title>
+<meta name="description" content="AI-powered B2B trade reply tool. Paste any customer message, get a professional English reply in seconds. 外贸客服一键生成专业英文回复。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --border: #222222;
+    --border2: #2e2e2e;
+    --text: #e8e8e8;
+    --text2: #888888;
+    --text3: #444444;
+    --white: #ffffff;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ── Nav ── */
+  nav {
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  .nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+  }
+  .logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--white);
+    letter-spacing: -0.3px;
+  }
+  .logo span { color: var(--text3); font-weight: 400; }
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a { font-size: 13px; color: var(--text2); transition: color 0.15s; }
+  .nav-links a:hover { color: var(--text); }
+  .btn-nav {
+    background: var(--white);
+    color: var(--bg);
+    border: none;
+    border-radius: 6px;
+    padding: 7px 18px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-nav:hover { opacity: 0.85; }
+
+  /* ── Hero ── */
+  .hero {
+    text-align: center;
+    padding: 6rem 0 4rem;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 16px;
+    font-size: 12px;
+    color: var(--text2);
+    letter-spacing: 0.5px;
+    margin-bottom: 2rem;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: #4ade80;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .hero h1 {
+    font-size: 56px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--text2);
+  }
+  .hero-cn {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--text3);
+    letter-spacing: 3px;
+    margin-bottom: 1.5rem;
+  }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 500px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.75;
+  }
+  .hero-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .btn-primary {
+    background: var(--white);
+    color: var(--bg);
+    border: none;
+    border-radius: 7px;
+    padding: 12px 30px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text2);
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    padding: 12px 30px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--text3); color: var(--text); }
+  .hero-note { font-size: 12px; color: var(--text3); }
+
+  /* ── Demo ── */
+  .demo-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 3rem 0 5rem;
+  }
+  .demo-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f56; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #27c93f; }
+  .demo-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); margin-left: 6px; letter-spacing: 1px; }
+  .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .demo-col-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+  .demo-msg {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.65;
+    min-height: 90px;
+  }
+  .demo-reply {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--white);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+    min-height: 90px;
+  }
+  .demo-tags { display: flex; gap: 8px; margin-top: 0.8rem; flex-wrap: wrap; }
+  .tag {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .demo-tips {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .tips-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .tips-list { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tip-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 4rem 0; }
+
+  /* ── Section headers ── */
+  .sec-top { text-align: center; margin-bottom: 2.5rem; }
+  .sec-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.8rem;
+  }
+  .sec-h2 {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.8px;
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+  .sec-cn { font-size: 13px; color: var(--text3); letter-spacing: 2px; }
+
+  /* ── Features ── */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 5rem;
+  }
+  .feat {
+    background: var(--bg);
+    padding: 1.6rem;
+  }
+  .feat-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 1rem;
+  }
+  .feat-title { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 0.2rem; }
+  .feat-cn { font-size: 11px; color: var(--text3); margin-bottom: 0.6rem; letter-spacing: 1px; }
+  .feat-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  /* ── Intents ── */
+  .intents {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 5rem;
+  }
+  .intent-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    transition: border-color 0.15s;
+  }
+  .intent-card:hover { border-color: var(--border2); }
+  .intent-en { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.2rem; }
+  .intent-cn { font-size: 11px; color: var(--text3); }
+
+  /* ── Pricing ── */
+  .pricing {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 5rem;
+  }
+  .plan {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .plan.featured {
+    border-color: #555;
+    background: var(--bg3);
+  }
+  .plan-badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: 11px;
+    margin-bottom: 1.2rem;
+    width: fit-content;
+  }
+  .plan-badge.free { background: var(--bg3); border: 1px solid var(--border2); color: var(--text3); }
+  .plan-badge.popular { background: var(--white); color: var(--bg); }
+  .plan-badge.once { background: var(--bg3); border: 1px solid var(--border2); color: var(--text3); }
+  .plan-name { font-size: 15px; font-weight: 500; color: var(--white); }
+  .plan-cn { font-size: 12px; color: var(--text3); margin-bottom: 1.2rem; }
+  .plan-price { font-size: 36px; font-weight: 500; color: var(--white); letter-spacing: -1.5px; line-height: 1; margin-bottom: 0.3rem; }
+  .plan-period { font-size: 12px; color: var(--text3); margin-bottom: 1.5rem; }
+  .plan-items { list-style: none; flex: 1; margin-bottom: 1.5rem; }
+  .plan-items li {
+    font-size: 13px;
+    color: var(--text2);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .plan-items li:last-child { border-bottom: none; }
+  .plan-items li::before { content: "–"; color: var(--text3); flex-shrink: 0; }
+  .btn-plan {
+    width: 100%;
+    border-radius: 7px;
+    padding: 10px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+  .btn-outline:hover { color: var(--text); border-color: var(--text3); }
+  .btn-filled { background: var(--white); color: var(--bg); border: none; }
+  .btn-filled:hover { opacity: 0.88; }
+
+  /* ── CTA ── */
+  .cta-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4rem 2rem;
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+  .cta-h {
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--white);
+    letter-spacing: -1px;
+    margin-bottom: 0.4rem;
+  }
+  .cta-cn { font-size: 14px; color: var(--text3); letter-spacing: 2px; margin-bottom: 2rem; }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .footer-logo { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--text3); }
+  .footer-note { font-size: 12px; color: var(--text3); }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .hero h1 { font-size: 34px; letter-spacing: -1px; }
+    .hero-cn { font-size: 14px; }
+    .demo-grid { grid-template-columns: 1fr; }
+    .features { grid-template-columns: 1fr; }
+    .intents { grid-template-columns: repeat(2, 1fr); }
+    .pricing { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .cta-h { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <div class="logo">TradeReply <span>AI</span></div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#" style="color:var(--text3)">功能</a>
+        <a href="#" style="color:var(--text3)">定价</a>
+        <button class="btn-nav" onclick="window.open('https://tradereply-ai-mzocqb3nsy5xotwtioygr4.streamlit.app','_blank')">Try Free · 免费试用</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Now live · 已上线
+    </div>
+    <h1>Reply smarter.<br><em>Close faster.</em></h1>
+    <div class="hero-cn">外贸客服 · 一键生成专业英文回复</div>
+    <p class="hero-sub">Paste any buyer message — get a professional, deal-closing English reply in seconds. Built for B2B exporters worldwide.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="window.open('https://tradereply-ai-mzocqb3nsy5xotwtioygr4.streamlit.app','_blank')">Start for free →</button>
+      <button class="btn-secondary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">See demo</button>
+    </div>
+    <div class="hero-note">No signup required · 无需注册 · 5 free replies/day</div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<div class="container" id="demo">
+  <div class="demo-wrap">
+    <div class="demo-top">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <span class="demo-title">TRADEREPLY AI — LIVE EXAMPLE</span>
+    </div>
+    <div class="demo-grid">
+      <div>
+        <div class="demo-col-label">Customer message</div>
+        <div class="demo-msg">"Hi, I want to know your price for 500 units. Also what's the lead time to the US?"</div>
+        <div class="demo-tags">
+          <span class="tag">💰 Pricing inquiry</span>
+          <span class="tag">🚚 Delivery inquiry</span>
+        </div>
+      </div>
+      <div>
+        <div class="demo-col-label">TradeReply AI generates</div>
+        <div class="demo-reply">Hi! Thanks for reaching out — great to hear from you!<br><br>To send the most accurate quote, could you share the product specs and confirm the destination port? For 500 units, we typically ship within 15–20 business days. Looking forward to working with you!</div>
+      </div>
+    </div>
+    <div class="demo-tips">
+      <div class="tips-label">Recommended follow-ups · 推荐跟进</div>
+      <div class="tips-list">
+        <span class="tip-item">询问具体规格型号</span>
+        <span class="tip-item">确认目的地港口</span>
+        <span class="tip-item">了解样品需求</span>
+        <span class="tip-item">推进下单时间</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="container" id="features">
+  <div class="sec-top">
+    <div class="sec-eyebrow">Features · 功能</div>
+    <div class="sec-h2">Everything you need to close deals</div>
+    <div class="sec-cn">外贸成交所需的一切</div>
+  </div>
+  <div class="features">
+    <div class="feat">
+      <div class="feat-num">01</div>
+      <div class="feat-title">Instant professional replies</div>
+      <div class="feat-cn">秒速生成专业回复</div>
+      <div class="feat-desc">Get a deal-closing English reply in under 3 seconds. No templates, no copy-paste guesswork.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-num">02</div>
+      <div class="feat-title">Intent detection</div>
+      <div class="feat-cn">自动识别客户意图</div>
+      <div class="feat-desc">Pricing, complaints, delivery, customization — automatically detected and handled correctly.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-num">03</div>
+      <div class="feat-title">Follow-up suggestions</div>
+      <div class="feat-cn">智能跟进建议</div>
+      <div class="feat-desc">Every reply includes smart next steps to push the conversation toward a deal.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-num">04</div>
+      <div class="feat-title">Bilingual input</div>
+      <div class="feat-cn">中英文输入均可</div>
+      <div class="feat-desc">Write in Chinese or English — always outputs polished, professional English.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-num">05</div>
+      <div class="feat-title">One-click copy</div>
+      <div class="feat-cn">一键复制</div>
+      <div class="feat-desc">Copy the reply instantly and paste into any email, WhatsApp, or Alibaba chat.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-num">06</div>
+      <div class="feat-title">History tracking</div>
+      <div class="feat-cn">对话记录保存</div>
+      <div class="feat-desc">Recent conversations are saved automatically so you never lose context on a deal.</div>
+    </div>
+  </div>
+</div>
+
+<!-- INTENTS -->
+<div class="container">
+  <div class="sec-top">
+    <div class="sec-eyebrow">Coverage · 场景覆盖</div>
+    <div class="sec-h2">Handles every buyer scenario</div>
+    <div class="sec-cn">覆盖所有常见外贸询盘场景</div>
+  </div>
+  <div class="intents">
+    <div class="intent-card"><div class="intent-en">💰 Pricing</div><div class="intent-cn">询价</div></div>
+    <div class="intent-card"><div class="intent-en">🚚 Delivery</div><div class="intent-cn">交期咨询</div></div>
+    <div class="intent-card"><div class="intent-en">🎨 Customization</div><div class="intent-cn">定制需求</div></div>
+    <div class="intent-card"><div class="intent-en">⚠️ Complaint</div><div class="intent-cn">投诉处理</div></div>
+    <div class="intent-card"><div class="intent-en">🔄 Follow-up</div><div class="intent-cn">跟进</div></div>
+    <div class="intent-card"><div class="intent-en">🔧 After-sales</div><div class="intent-cn">售后服务</div></div>
+    <div class="intent-card"><div class="intent-en">📦 Product inquiry</div><div class="intent-cn">产品咨询</div></div>
+    <div class="intent-card"><div class="intent-en">💬 General</div><div class="intent-cn">一般询盘</div></div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="container" id="pricing">
+  <div class="sec-top">
+    <div class="sec-eyebrow">Pricing · 定价</div>
+    <div class="sec-h2">Simple, honest pricing</div>
+    <div class="sec-cn">清晰透明，没有隐藏费用</div>
+  </div>
+  <div class="pricing">
+    <div class="plan">
+      <span class="plan-badge free">Free · 免费</span>
+      <div class="plan-name">Starter</div>
+      <div class="plan-cn">入门版</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-period">forever · 永久免费</div>
+      <ul class="plan-items">
+        <li>5 replies per day</li>
+        <li>All 8 intent types</li>
+        <li>Copy & history</li>
+        <li>No signup needed</li>
+      </ul>
+      <button class="btn-plan btn-outline" onclick="window.open('https://tradereply-ai-mzocqb3nsy5xotwtioygr4.streamlit.app','_blank')">Get started free</button>
+    </div>
+    <div class="plan featured">
+      <span class="plan-badge popular">Most popular · 最受欢迎</span>
+      <div class="plan-name">Pro</div>
+      <div class="plan-cn">专业版</div>
+      <div class="plan-price">$19</div>
+      <div class="plan-period">per month · 每月</div>
+      <ul class="plan-items">
+        <li>Unlimited replies</li>
+        <li>AI-powered responses</li>
+        <li>Priority support</li>
+        <li>Export history</li>
+        <li>Custom tone settings</li>
+      </ul>
+      <button class="btn-plan btn-filled">Upgrade to Pro</button>
+    </div>
+    <div class="plan">
+      <span class="plan-badge once">One-time · 买断</span>
+      <div class="plan-name">Lifetime</div>
+      <div class="plan-cn">永久版</div>
+      <div class="plan-price">$99</div>
+      <div class="plan-period">one-time · 一次性付款</div>
+      <ul class="plan-items">
+        <li>Everything in Pro</li>
+        <li>All future updates</li>
+        <li>Commercial license</li>
+        <li>Priority onboarding</li>
+      </ul>
+      <button class="btn-plan btn-outline">Buy lifetime access</button>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="container">
+  <div class="cta-section">
+    <div class="cta-h">Start closing more deals today</div>
+    <div class="cta-cn">立即开始，提升外贸询盘转化率</div>
+    <button class="btn-primary" onclick="window.open('https://tradereply-ai-mzocqb3nsy5xotwtioygr4.streamlit.app','_blank')">Try TradeReply AI for free →</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="container">
+  <footer>
+    <div class="footer-logo">TradeReply AI</div>
+    <div class="footer-note">Built for B2B exporters worldwide · 为全球外贸人打造</div>
+  </footer>
+</div>
+
+</body>
+</html>
