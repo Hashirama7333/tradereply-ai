@@ -8,461 +8,92 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --bg: #050505;
-  --bg2: #080808;
-  --bg3: #0a0a0a;
-  --border: #111111;
-  --border2: #1a1a1a;
-  --text: #c8c8c8;
-  --text2: #666;
-  --text3: #333;
-  --white: #f0f0f0;
-  --green: #4ade80;
+  --bg: #050505; --bg2: #080808; --bg3: #0a0a0a;
+  --border: #111111; --border2: #1a1a1a;
+  --text: #c8c8c8; --text2: #666; --text3: #333;
+  --white: #f0f0f0; --green: #4ade80;
 }
-
 html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── NAV ── */
-nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(5,5,5,0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  height: 56px;
-  display: flex;
-  align-items: center;
-  padding: 0 3rem;
-  justify-content: space-between;
-}
-.nav-logo {
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+nav { position: sticky; top: 0; z-index: 100; background: rgba(5,5,5,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; padding: 0 3rem; justify-content: space-between; }
+.nav-logo { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
 .nav-dot { width: 6px; height: 6px; background: #fff; border-radius: 50%; }
 .nav-links { display: flex; align-items: center; gap: 2.5rem; }
-.nav-links a {
-  font-size: 12px;
-  color: var(--text3);
-  text-decoration: none;
-  letter-spacing: 0.5px;
-  transition: color 0.15s;
-}
+.nav-links a { font-size: 12px; color: var(--text3); text-decoration: none; letter-spacing: 0.5px; transition: color 0.15s; }
 .nav-links a:hover { color: var(--text2); }
-.nav-btn {
-  background: var(--white);
-  color: var(--bg);
-  border: none;
-  border-radius: 7px;
-  padding: 8px 20px;
-  font-family: 'Syne', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 1px;
-  transition: opacity 0.15s, transform 0.1s;
-  text-transform: uppercase;
-}
+.nav-btn { background: var(--white); color: var(--bg); border: none; border-radius: 7px; padding: 8px 20px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; text-transform: uppercase; }
 .nav-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-
-/* ── HERO ── */
-.hero {
-  text-align: center;
-  padding: 7rem 2rem 5rem;
-  max-width: 800px;
-  margin: 0 auto;
-}
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 5px 16px;
-  font-size: 11px;
-  color: var(--text3);
-  letter-spacing: 1px;
-  margin-bottom: 2.5rem;
-}
-.hero-badge-dot {
-  width: 5px; height: 5px;
-  background: var(--green);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
+.hero { text-align: center; padding: 7rem 2rem 5rem; max-width: 800px; margin: 0 auto; }
+.hero-badge { display: inline-flex; align-items: center; gap: 7px; background: var(--bg2); border: 1px solid var(--border); border-radius: 999px; padding: 5px 16px; font-size: 11px; color: var(--text3); letter-spacing: 1px; margin-bottom: 2.5rem; }
+.hero-badge-dot { width: 5px; height: 5px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.hero h1 {
-  font-family: 'Syne', sans-serif;
-  font-size: 62px;
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -2.5px;
-  color: #fff;
-  margin-bottom: 0.5rem;
-}
+.hero h1 { font-family: 'Syne', sans-serif; font-size: 62px; font-weight: 800; line-height: 1.05; letter-spacing: -2.5px; color: #fff; margin-bottom: 0.5rem; }
 .hero h1 span { color: var(--text3); }
-.hero-cn {
-  font-size: 14px;
-  color: var(--text3);
-  letter-spacing: 4px;
-  margin-bottom: 1.5rem;
-}
-.hero-sub {
-  font-size: 15px;
-  color: var(--text2);
-  max-width: 480px;
-  margin: 0 auto 2.5rem;
-  line-height: 1.8;
-}
-.hero-btns {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-.btn-primary {
-  background: var(--white);
-  color: var(--bg);
-  border: none;
-  border-radius: 8px;
-  padding: 13px 32px;
-  font-family: 'Syne', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  transition: all 0.15s;
-}
+.hero-cn { font-size: 14px; color: var(--text3); letter-spacing: 4px; margin-bottom: 1.5rem; }
+.hero-sub { font-size: 15px; color: var(--text2); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.8; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+.btn-primary { background: var(--white); color: var(--bg); border: none; border-radius: 8px; padding: 13px 32px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.15s; }
 .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
-.btn-ghost {
-  background: transparent;
-  color: var(--text3);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  padding: 13px 32px;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
+.btn-ghost { background: transparent; color: var(--text3); border: 1px solid var(--border2); border-radius: 8px; padding: 13px 32px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.15s; }
 .btn-ghost:hover { color: var(--text2); border-color: var(--text3); }
 .hero-note { font-size: 11px; color: var(--text3); letter-spacing: 1px; }
-
-/* ── TOOL SECTION ── */
-.tool-section {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem 2rem 6rem;
-}
-.tool-wrap {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-}
-.tool-header {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.tool-section { max-width: 1100px; margin: 0 auto; padding: 2rem 2rem 6rem; }
+.tool-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.tool-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
 .t-dot { width: 10px; height: 10px; border-radius: 50%; }
-.t-r { background: #ff5f57; }
-.t-y { background: #febc2e; }
-.t-g { background: #28c840; }
-.tool-title {
-  font-size: 10px;
-  color: var(--text3);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-family: 'Inter', monospace;
-  margin-left: 6px;
-}
-.tool-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 500px;
-}
-.tool-left {
-  padding: 2rem;
-  border-right: 1px solid var(--border);
-}
-.tool-right {
-  padding: 2rem;
-  background: var(--bg3);
-}
-.t-label {
-  font-size: 9px;
-  color: var(--text3);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  font-family: 'Inter', monospace;
-  margin-bottom: 0.75rem;
-}
-textarea#customer-input {
-  width: 100%;
-  background: var(--bg3);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1rem 1.2rem;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  line-height: 1.8;
-  resize: none;
-  height: 180px;
-  transition: border-color 0.2s;
-  outline: none;
-}
+.t-r { background: #ff5f57; } .t-y { background: #febc2e; } .t-g { background: #28c840; }
+.tool-title { font-size: 10px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; font-family: 'Inter', monospace; margin-left: 6px; }
+.tool-body { display: grid; grid-template-columns: 1fr 1fr; min-height: 500px; }
+.tool-left { padding: 2rem; border-right: 1px solid var(--border); }
+.tool-right { padding: 2rem; background: var(--bg3); }
+.t-label { font-size: 9px; color: var(--text3); letter-spacing: 3px; text-transform: uppercase; font-family: 'Inter', monospace; margin-bottom: 0.75rem; }
+textarea#customer-input { width: 100%; background: var(--bg3); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.2rem; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.8; resize: none; height: 180px; transition: border-color 0.2s; outline: none; }
 textarea#customer-input:focus { border-color: var(--border2); }
 textarea#customer-input::placeholder { color: var(--text3); font-size: 13px; }
-
-.tool-btns {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 10px;
-  margin-top: 1rem;
-}
-.btn-generate {
-  background: var(--white);
-  color: #050505;
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  font-family: 'Syne', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
+.tool-btns { display: grid; grid-template-columns: 3fr 1fr; gap: 10px; margin-top: 1rem; }
+.btn-generate { background: var(--white); color: #050505; border: none; border-radius: 8px; padding: 12px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
 .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-.btn-clear {
-  background: transparent;
-  color: var(--text3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
+.btn-clear { background: transparent; color: var(--text3); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: 'Inter', sans-serif; font-size: 12px; cursor: pointer; transition: all 0.15s; }
 .btn-clear:hover { color: var(--text2); border-color: var(--border2); }
-
-/* ── RESULT ── */
-.result-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  text-align: center;
-  gap: 1rem;
-  padding: 2rem;
-}
+.result-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; gap: 1rem; padding: 2rem; }
 .result-empty-icon { font-size: 20px; color: var(--border2); }
-.result-empty-text {
-  font-size: 10px;
-  color: var(--border2);
-  letter-spacing: 3px;
-  line-height: 2.5;
-  text-transform: uppercase;
-  font-family: 'Inter', monospace;
-}
-.intent-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 5px 14px 5px 10px;
-  font-size: 11px;
-  color: var(--text2);
-  margin-bottom: 1.2rem;
-}
+.result-empty-text { font-size: 10px; color: var(--border2); letter-spacing: 3px; line-height: 2.5; text-transform: uppercase; font-family: 'Inter', monospace; }
+.intent-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--bg2); border: 1px solid var(--border); border-radius: 999px; padding: 5px 14px 5px 10px; font-size: 11px; color: var(--text2); margin-bottom: 1.2rem; }
 .intent-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-.reply-box {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--white);
-  border-radius: 10px;
-  padding: 1.2rem 1.5rem;
-  font-size: 13.5px;
-  line-height: 1.9;
-  color: #aaa;
-  white-space: pre-wrap;
-  word-break: break-word;
-  margin-bottom: 1rem;
-}
-.btn-copy {
-  background: var(--bg2);
-  color: var(--text3);
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  padding: 8px 16px;
-  font-size: 11px;
-  font-family: 'Inter', monospace;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.15s;
-  margin-bottom: 1.5rem;
-}
+.reply-box { background: var(--bg2); border: 1px solid var(--border); border-left: 2px solid var(--white); border-radius: 10px; padding: 1.2rem 1.5rem; font-size: 13.5px; line-height: 1.9; color: #aaa; white-space: pre-wrap; word-break: break-word; margin-bottom: 1rem; }
+.btn-copy { background: var(--bg2); color: var(--text3); border: 1px solid var(--border); border-radius: 7px; padding: 8px 16px; font-size: 11px; font-family: 'Inter', monospace; letter-spacing: 1px; cursor: pointer; transition: all 0.15s; margin-bottom: 1.5rem; }
 .btn-copy:hover { color: var(--text2); border-color: var(--border2); }
 .copy-ok { font-size: 10px; color: var(--green); letter-spacing: 1.5px; margin-left: 10px; font-family: 'Inter', monospace; display: none; }
-.tips-wrap {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-}
-.tip-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  font-size: 12.5px;
-  color: var(--text3);
-  line-height: 1.6;
-  transition: background 0.1s;
-}
+.tips-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.tip-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12.5px; color: var(--text3); line-height: 1.6; transition: background 0.1s; }
 .tip-item:last-child { border-bottom: none; }
 .tip-item:hover { background: var(--bg3); color: var(--text2); }
 .tip-n { font-size: 9px; color: var(--border2); min-width: 16px; padding-top: 3px; font-family: 'Inter', monospace; }
-
-/* ── LOADING ── */
-.loading {
-  display: none;
-  align-items: center;
-  gap: 10px;
-  color: var(--text3);
-  font-size: 12px;
-  letter-spacing: 1px;
-  font-family: 'Inter', monospace;
-  padding: 2rem;
-}
-.loading-dots span {
-  display: inline-block;
-  width: 4px; height: 4px;
-  background: var(--text3);
-  border-radius: 50%;
-  margin: 0 2px;
-  animation: dot 1.2s infinite;
-}
+.loading { display: none; align-items: center; gap: 10px; color: var(--text3); font-size: 12px; letter-spacing: 1px; font-family: 'Inter', monospace; padding: 2rem; }
+.loading-dots span { display: inline-block; width: 4px; height: 4px; background: var(--text3); border-radius: 50%; margin: 0 2px; animation: dot 1.2s infinite; }
 .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
 .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes dot { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
-
-/* ── DIVIDER ── */
 hr { border: none; border-top: 1px solid var(--border); margin: 4rem 0; }
-
-/* ── FEATURES ── */
-.features-section {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 2rem 6rem;
-}
-.sec-label {
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--text3);
-  text-align: center;
-  margin-bottom: 0.8rem;
-  font-family: 'Inter', monospace;
-}
-.sec-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 32px;
-  font-weight: 700;
-  color: #fff;
-  text-align: center;
-  letter-spacing: -1px;
-  margin-bottom: 0.3rem;
-}
+.features-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 6rem; }
+.sec-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--text3); text-align: center; margin-bottom: 0.8rem; font-family: 'Inter', monospace; }
+.sec-title { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 700; color: #fff; text-align: center; letter-spacing: -1px; margin-bottom: 0.3rem; }
 .sec-cn { font-size: 12px; color: var(--text3); text-align: center; letter-spacing: 3px; margin-bottom: 3rem; }
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-}
-.feat {
-  background: var(--bg);
-  padding: 1.8rem;
-  transition: background 0.15s;
-}
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.feat { background: var(--bg); padding: 1.8rem; transition: background 0.15s; }
 .feat:hover { background: var(--bg2); }
 .feat-num { font-size: 10px; color: var(--border2); font-family: 'Inter', monospace; margin-bottom: 1rem; }
 .feat-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 0.2rem; }
 .feat-cn { font-size: 11px; color: var(--text3); margin-bottom: 0.6rem; letter-spacing: 1px; }
 .feat-desc { font-size: 13px; color: var(--text2); line-height: 1.65; }
-
-/* ── PRICING ── */
-.pricing-section {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 2rem 6rem;
-}
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-.plan {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 1.8rem;
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.15s;
-}
+.pricing-section { max-width: 900px; margin: 0 auto; padding: 0 2rem 6rem; }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.plan { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 1.8rem; display: flex; flex-direction: column; transition: border-color 0.15s; }
 .plan:hover { border-color: var(--border2); }
 .plan.featured { border-color: #2a2a2a; background: var(--bg3); }
-.plan-badge {
-  display: inline-block;
-  border-radius: 999px;
-  padding: 3px 12px;
-  font-size: 10px;
-  margin-bottom: 1.2rem;
-  width: fit-content;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  font-family: 'Inter', monospace;
-}
+.plan-badge { display: inline-block; border-radius: 999px; padding: 3px 12px; font-size: 10px; margin-bottom: 1.2rem; width: fit-content; letter-spacing: 1px; text-transform: uppercase; font-family: 'Inter', monospace; }
 .badge-free { background: var(--bg3); border: 1px solid var(--border2); color: var(--text3); }
 .badge-popular { background: var(--white); color: var(--bg); }
 .badge-once { background: var(--bg3); border: 1px solid var(--border2); color: var(--text3); }
@@ -471,89 +102,34 @@ hr { border: none; border-top: 1px solid var(--border); margin: 4rem 0; }
 .plan-price { font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800; color: #fff; letter-spacing: -2px; line-height: 1; margin-bottom: 0.3rem; }
 .plan-period { font-size: 11px; color: var(--text3); margin-bottom: 1.5rem; letter-spacing: 1px; }
 .plan-items { list-style: none; flex: 1; margin-bottom: 1.5rem; }
-.plan-items li {
-  font-size: 13px;
-  color: var(--text2);
-  padding: 7px 0;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.plan-items li { font-size: 13px; color: var(--text2); padding: 7px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
 .plan-items li:last-child { border-bottom: none; }
 .plan-items li::before { content: "–"; color: var(--text3); }
-.btn-plan {
-  width: 100%;
-  border-radius: 8px;
-  padding: 11px;
-  font-family: 'Syne', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.15s;
-}
+.btn-plan { width: 100%; border-radius: 8px; padding: 11px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
 .btn-outline-plan { background: transparent; color: var(--text3); border: 1px solid var(--border2); }
 .btn-outline-plan:hover { color: var(--text2); border-color: var(--text3); }
 .btn-filled-plan { background: var(--white); color: var(--bg); border: none; }
 .btn-filled-plan:hover { opacity: 0.88; }
-
-/* ── CTA ── */
-.cta-section {
-  max-width: 900px;
-  margin: 0 auto 6rem;
-  padding: 0 2rem;
-}
-.cta-wrap {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 4rem 2rem;
-  text-align: center;
-}
-.cta-h {
-  font-family: 'Syne', sans-serif;
-  font-size: 36px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -1.5px;
-  margin-bottom: 0.4rem;
-}
+.cta-section { max-width: 900px; margin: 0 auto 6rem; padding: 0 2rem; }
+.cta-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 4rem 2rem; text-align: center; }
+.cta-h { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: #fff; letter-spacing: -1.5px; margin-bottom: 0.4rem; }
 .cta-cn { font-size: 12px; color: var(--text3); letter-spacing: 3px; margin-bottom: 2rem; }
-
-/* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 2rem 3rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
+footer { border-top: 1px solid var(--border); padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
 .footer-logo { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text3); }
-.footer-note { font-size: 11px; color: var(--text3); letter-spacing: 0.5px; }
-
-/* ── RESPONSIVE ── */
+.footer-note { font-size: 11px; color: var(--text3); }
 @media (max-width: 768px) {
-  .hero h1 { font-size: 36px; letter-spacing: -1px; }
+  .hero h1 { font-size: 36px; }
   .tool-body { grid-template-columns: 1fr; }
   .features-grid { grid-template-columns: 1fr; }
   .pricing-grid { grid-template-columns: 1fr; }
   nav .nav-links { display: none; }
-  .cta-h { font-size: 24px; }
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
-  <div class="nav-logo">
-    <div class="nav-dot"></div>
-    TradeReply AI
-  </div>
+  <div class="nav-logo"><div class="nav-dot"></div>TradeReply AI</div>
   <div class="nav-links">
     <a href="#tool">Try it</a>
     <a href="#features">Features</a>
@@ -563,12 +139,8 @@ footer {
   <button class="nav-btn" onclick="document.getElementById('tool').scrollIntoView({behavior:'smooth'})">Try Free →</button>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">
-    <div class="hero-badge-dot"></div>
-    Now live · 已上线 · Powered by DeepSeek
-  </div>
+  <div class="hero-badge"><div class="hero-badge-dot"></div>Now live · 已上线 · Powered by DeepSeek</div>
   <h1>Reply smarter.<br><span>Close faster.</span></h1>
   <div class="hero-cn">外贸客服 · 一键生成专业英文回复</div>
   <p class="hero-sub">Paste any buyer message — get a professional, deal-closing English reply in seconds. Built for B2B exporters worldwide.</p>
@@ -579,59 +151,37 @@ footer {
   <div class="hero-note">No signup required · 无需注册 · Free to use</div>
 </section>
 
-<!-- TOOL -->
 <section class="tool-section" id="tool">
   <div class="tool-wrap">
     <div class="tool-header">
-      <div class="t-dot t-r"></div>
-      <div class="t-dot t-y"></div>
-      <div class="t-dot t-g"></div>
+      <div class="t-dot t-r"></div><div class="t-dot t-y"></div><div class="t-dot t-g"></div>
       <span class="tool-title">TradeReply AI · Live Tool</span>
     </div>
     <div class="tool-body">
-      <!-- LEFT -->
       <div class="tool-left">
         <div class="t-label">客户消息 · Customer Message</div>
         <textarea id="customer-input" placeholder="粘贴客户发来的消息（中英文均可）...&#10;&#10;例如：Hi, I want to know your price for 500 units."></textarea>
         <div class="tool-btns">
-          <button class="btn-generate" id="gen-btn" onclick="generateReply()">
-            <span>✦</span> 生成专业回复
-          </button>
+          <button class="btn-generate" id="gen-btn" onclick="generateReply()"><span>✦</span> 生成专业回复</button>
           <button class="btn-clear" onclick="clearAll()">清空</button>
         </div>
       </div>
-
-      <!-- RIGHT -->
       <div class="tool-right" id="result-area">
         <div class="result-empty" id="empty-state">
           <div class="result-empty-icon">✦</div>
-          <div class="result-empty-text">
-            输入客户消息<br>
-            点击生成按钮<br>
-            AI 实时生成回复
-          </div>
+          <div class="result-empty-text">输入客户消息<br>点击生成按钮<br>AI 实时生成回复</div>
         </div>
-
         <div class="loading" id="loading-state">
-          <div class="loading-dots">
-            <span></span><span></span><span></span>
-          </div>
+          <div class="loading-dots"><span></span><span></span><span></span></div>
           AI 分析中...
         </div>
-
         <div id="reply-state" style="display:none">
           <div class="t-label">意图识别 · Intent</div>
-          <div class="intent-pill">
-            <div class="intent-dot"></div>
-            <span id="intent-label">-</span>
-          </div>
-
+          <div class="intent-pill"><div class="intent-dot"></div><span id="intent-label">-</span></div>
           <div class="t-label">英文回复 · Reply</div>
           <div class="reply-box" id="reply-content"></div>
-
           <button class="btn-copy" onclick="copyReply()">📋 复制回复</button>
           <span class="copy-ok" id="copy-ok">✓ copied</span>
-
           <div class="t-label" style="margin-top:1rem">跟进建议 · Next Steps</div>
           <div class="tips-wrap" id="tips-wrap"></div>
         </div>
@@ -640,7 +190,6 @@ footer {
   </div>
 </section>
 
-<!-- FEATURES -->
 <section class="features-section" id="features">
   <div class="sec-label">Features · 功能</div>
   <div class="sec-title">Everything to close deals</div>
@@ -655,7 +204,6 @@ footer {
   </div>
 </section>
 
-<!-- PRICING -->
 <section class="pricing-section" id="pricing">
   <div class="sec-label">Pricing · 定价</div>
   <div class="sec-title">Simple pricing</div>
@@ -663,48 +211,28 @@ footer {
   <div class="pricing-grid">
     <div class="plan">
       <span class="plan-badge badge-free">Free</span>
-      <div class="plan-name">Starter</div>
-      <div class="plan-cn">入门版</div>
-      <div class="plan-price">¥0</div>
-      <div class="plan-period">永久免费 · forever</div>
-      <ul class="plan-items">
-        <li>每天10次回复</li>
-        <li>全部意图类型</li>
-        <li>一键复制</li>
-      </ul>
+      <div class="plan-name">Starter</div><div class="plan-cn">入门版</div>
+      <div class="plan-price">¥0</div><div class="plan-period">永久免费 · forever</div>
+      <ul class="plan-items"><li>每天10次回复</li><li>全部意图类型</li><li>一键复制</li></ul>
       <button class="btn-plan btn-outline-plan" onclick="document.getElementById('tool').scrollIntoView({behavior:'smooth'})">立即使用</button>
     </div>
     <div class="plan featured">
       <span class="plan-badge badge-popular">Most Popular</span>
-      <div class="plan-name">Pro</div>
-      <div class="plan-cn">专业版</div>
-      <div class="plan-price">¥99</div>
-      <div class="plan-period">每月 · per month</div>
-      <ul class="plan-items">
-        <li>无限次回复</li>
-        <li>更强AI模型</li>
-        <li>优先客服支持</li>
-        <li>历史记录导出</li>
-      </ul>
+      <div class="plan-name">Pro</div><div class="plan-cn">专业版</div>
+      <div class="plan-price">¥99</div><div class="plan-period">每月 · per month</div>
+      <ul class="plan-items"><li>无限次回复</li><li>更强AI模型</li><li>优先客服支持</li><li>历史记录导出</li></ul>
       <button class="btn-plan btn-filled-plan">升级 Pro</button>
     </div>
     <div class="plan">
       <span class="plan-badge badge-once">买断</span>
-      <div class="plan-name">Lifetime</div>
-      <div class="plan-cn">永久版</div>
-      <div class="plan-price">¥499</div>
-      <div class="plan-period">一次性付款 · one-time</div>
-      <ul class="plan-items">
-        <li>Pro全部功能</li>
-        <li>永久更新</li>
-        <li>商业授权</li>
-      </ul>
+      <div class="plan-name">Lifetime</div><div class="plan-cn">永久版</div>
+      <div class="plan-price">¥499</div><div class="plan-period">一次性付款 · one-time</div>
+      <ul class="plan-items"><li>Pro全部功能</li><li>永久更新</li><li>商业授权</li></ul>
       <button class="btn-plan btn-outline-plan">购买永久版</button>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
 <section class="cta-section">
   <div class="cta-wrap">
     <div class="cta-h">Start closing deals today</div>
@@ -713,83 +241,40 @@ footer {
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-logo">TradeReply AI</div>
   <div class="footer-note">Built for B2B exporters · 为全球外贸人打造 · Powered by DeepSeek</div>
 </footer>
 
 <script>
-// ── DeepSeek API ──
-const API_KEY = 'sk-f1862ef94c424e178305e274abdfe6ed';
-const API_URL = 'https://api.deepseek.com/v1/chat/completions';
-
-const SYSTEM_PROMPT = `你是一个专业的外贸B2B销售客服，帮助外贸公司回复海外买家。
-
-任务：分析客户消息，用专业自然有销售力的英文回复，推进成交。
-
-回复规则：
-- 问价格 → 感谢+询问产品/数量/规格+承诺快速报价
-- 抱怨 → 感谢反馈+询问具体问题+提出解决方案  
-- 问交期 → 给时间范围+询问数量和目的地
-- 问定制 → 支持定制+询问logo/尺寸/材质/数量
-- 跟进 → 感谢耐心+询问具体订单
-- 其他 → 引导获取更多信息
-
-必须返回JSON格式：
-{
-  "intent_label": "意图（中英双语，如：💰 询价 · Pricing）",
-  "reply": "专业英文回复",
-  "tips": ["建议1", "建议2", "建议3", "建议4"]
-}
-只返回JSON。`;
+// ── 后端API地址（API Key安全存在服务器上）──
+const BACKEND_URL = 'http://150.158.18.19:5000/api/reply';
 
 async function generateReply() {
   const input = document.getElementById('customer-input').value.trim();
   if (!input) { alert('请先输入客户消息'); return; }
 
-  // Show loading
   document.getElementById('empty-state').style.display = 'none';
   document.getElementById('reply-state').style.display = 'none';
   document.getElementById('loading-state').style.display = 'flex';
   document.getElementById('gen-btn').disabled = true;
 
   try {
-    const res = await fetch(API_URL, {
+    const res = await fetch(BACKEND_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user',   content: `客户消息：${input}` }
-        ],
-        max_tokens: 1000,
-        temperature: 0.7
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: input })
     });
 
-    const data = await res.json();
-    let raw = data.choices[0].message.content.trim();
-    raw = raw.replace(/```json/g,'').replace(/```/g,'').trim();
-    const result = JSON.parse(raw);
+    const result = await res.json();
 
-    // Show result
     document.getElementById('intent-label').textContent = result.intent_label || '💬 General';
     document.getElementById('reply-content').textContent = result.reply || '';
 
-    // Tips
     const tipsWrap = document.getElementById('tips-wrap');
     tipsWrap.innerHTML = '';
     (result.tips || []).forEach((tip, i) => {
-      tipsWrap.innerHTML += `
-        <div class="tip-item">
-          <span class="tip-n">0${i+1}</span>
-          <span>${tip}</span>
-        </div>`;
+      tipsWrap.innerHTML += `<div class="tip-item"><span class="tip-n">0${i+1}</span><span>${tip}</span></div>`;
     });
 
     document.getElementById('loading-state').style.display = 'none';
@@ -821,7 +306,6 @@ function copyReply() {
   });
 }
 
-// Enter key shortcut
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('customer-input').addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key === 'Enter') generateReply();
