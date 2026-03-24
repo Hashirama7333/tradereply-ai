@@ -1,500 +1,341 @@
 # ============================================================
-# TradeReply AI · V3 Premium UI · DeepSeek
+# TradeReply AI · 后端 API V2
+# 更好的回复质量 + 多语言支持
 # ============================================================
 
-import streamlit as st
-import os
-import json
-from datetime import datetime
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from openai import OpenAI
+import json
+import sqlite3
+import hashlib
+import os
+from datetime import datetime
 
-st.set_page_config(
-    page_title="TradeReply AI",
-    page_icon="✦",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
+app = Flask(__name__)
+CORS(app)
 
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap');
+DEEPSEEK_API_KEY = "sk-f1862ef94c424e178305e274abdfe6ed"
 
-* { box-sizing: border-box; }
-html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
-.stApp { background: #050505; color: #d0d0d0; }
-#MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 0 !important; max-width: 100% !important; }
+# ── 数据库初始化 ──
+def init_db():
+    conn = sqlite3.connect('/root/tradereply.db')
+    c = conn.cursor()
+    # 用户表
+    c.execute('''CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE,
+        password TEXT,
+        plan TEXT DEFAULT 'free',
+        daily_count INTEGER DEFAULT 0,
+        last_reset TEXT,
+        created_at TEXT
+    )''')
+    # 历史记录表
+    c.execute('''CREATE TABLE IF NOT EXISTS history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        customer_msg TEXT,
+        intent_label TEXT,
+        reply TEXT,
+        tips TEXT,
+        created_at TEXT
+    )''')
+    conn.commit()
+    conn.close()
 
-/* ── TOP BAR ── */
-.tr-topbar {
-    background: #050505;
-    border-bottom: 1px solid #111;
-    padding: 0 4rem;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 999;
-}
-.tr-logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: -0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.tr-logo-dot {
-    width: 6px; height: 6px;
-    background: #fff;
-    border-radius: 50%;
-}
-.tr-logo-sub {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 300;
-    color: #222;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-}
-.tr-status {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: #333;
-    font-family: 'Inter', monospace;
-    letter-spacing: 1px;
-}
-.tr-status-dot {
-    width: 5px; height: 5px;
-    background: #4ade80;
-    border-radius: 50%;
-    animation: blink 2s infinite;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+init_db()
 
-/* ── MAIN GRID ── */
-.tr-main {
-    display: grid;
-    grid-template-columns: 480px 1fr;
-    min-height: calc(100vh - 52px);
-}
-.tr-left {
-    border-right: 1px solid #0e0e0e;
-    padding: 2.5rem 2.5rem;
-}
-.tr-right {
-    background: #030303;
-    padding: 2.5rem 3rem;
-}
+# ── System Prompt（升级版，更像真人销售）──
+SYSTEM_PROMPT_EN = """You are an elite B2B foreign trade sales representative with 10+ years of experience closing deals with international buyers from Europe, North America, Southeast Asia, and the Middle East.
 
-/* ── SECTION LABEL ── */
-.tr-label {
-    font-size: 9px;
-    font-weight: 500;
-    color: #1e1e1e;
-    letter-spacing: 3.5px;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-    font-family: 'Inter', monospace;
-}
+Your personality: warm, confident, professional, and always subtly pushing toward a sale without being pushy.
 
-/* ── TEXTAREA ── */
-textarea {
-    background: #080808 !important;
-    color: #c8c8c8 !important;
-    border: 1px solid #141414 !important;
-    border-radius: 10px !important;
-    font-family: 'Inter', sans-serif !important;
-    font-size: 14px !important;
-    line-height: 1.8 !important;
-    padding: 1rem 1.1rem !important;
-    transition: border-color 0.2s !important;
-    caret-color: #888 !important;
-}
-textarea:focus {
-    border-color: #252525 !important;
-    box-shadow: none !important;
-}
-textarea::placeholder { color: #1e1e1e !important; font-size: 13px !important; }
+Your goal: Turn every customer message into a step closer to a signed order.
 
-/* ── BUTTONS ── */
-.stButton > button {
-    font-family: 'Syne', sans-serif !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    letter-spacing: 2px !important;
-    border-radius: 8px !important;
-    text-transform: uppercase !important;
-    transition: all 0.15s !important;
-    height: 42px !important;
-    border: none !important;
-}
-div[data-testid="column"]:first-child .stButton > button {
-    background: #f0f0f0 !important;
-    color: #050505 !important;
-}
-div[data-testid="column"]:first-child .stButton > button:hover {
-    background: #fff !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 20px rgba(255,255,255,0.08) !important;
-}
-div[data-testid="column"]:nth-child(2) .stButton > button {
-    background: transparent !important;
-    color: #1e1e1e !important;
-    border: 1px solid #141414 !important;
-}
-div[data-testid="column"]:nth-child(2) .stButton > button:hover {
-    color: #444 !important;
-    border-color: #222 !important;
-}
+Rules for every reply:
+1. Start with genuine warmth — acknowledge their message specifically, never use generic openers
+2. Address their concern directly and completely
+3. Always ask 1-2 qualifying questions to gather info and advance the sale
+4. End with a clear, specific call to action
+5. Sound like a real human sales rep, NOT a chatbot or template
 
-/* ── INTENT PILL ── */
-.tr-intent {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #0a0a0a;
-    border: 1px solid #141414;
-    border-radius: 999px;
-    padding: 6px 16px 6px 12px;
-    font-size: 11px;
-    color: #666;
-    margin-bottom: 1.5rem;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: 0.3px;
-}
-.i-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+Tone guidelines:
+- Friendly but professional, like a trusted business partner
+- Confident about product quality without being arrogant
+- Use natural business English, occasional contractions are fine (we're, you'll, I'd)
+- Avoid corporate jargon, buzzwords, or overly formal language
 
-/* ── REPLY ── */
-.tr-reply {
-    background: #070707;
-    border: 1px solid #111;
-    border-left: 2px solid #c8c8c8;
-    border-radius: 10px;
-    padding: 1.5rem 1.8rem;
-    font-size: 14px;
-    line-height: 1.9;
-    color: #aaa;
-    white-space: pre-wrap;
-    word-break: break-word;
-    margin-bottom: 1.5rem;
-    position: relative;
-}
+Intent-specific tactics:
+- PRICING: Thank them → ask product/quantity/specs → promise fast quote → mention competitive pricing + quality
+- COMPLAINT: Empathize genuinely → ask for specifics → offer concrete solution → turn it into retention opportunity
+- DELIVERY: Give realistic timeline → ask destination + quantity → offer shipping options → create urgency if possible
+- CUSTOMIZATION: Show enthusiasm → ask logo/size/material/MOQ → offer sample → walk them through the process
+- FOLLOW-UP: Show you remember them → give specific update → push for next step → don't let the conversation die
+- AFTER-SALES: Apologize sincerely → ask for evidence → offer fair solution → protect the relationship
+- PRODUCT: Paint a picture of the product's value → ask use case → recommend specific model → move toward quote
 
-/* ── TIPS ── */
-.tr-tips {
-    background: #070707;
-    border: 1px solid #0e0e0e;
-    border-radius: 10px;
-    overflow: hidden;
-}
-.tr-tip {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 12px 16px;
-    border-bottom: 1px solid #0a0a0a;
-    font-size: 13px;
-    color: #555;
-    line-height: 1.6;
-    transition: background 0.1s;
-}
-.tr-tip:last-child { border-bottom: none; }
-.tr-tip:hover { background: #0a0a0a; }
-.tr-tip-n {
-    font-size: 9px;
-    color: #1e1e1e;
-    min-width: 16px;
-    padding-top: 3px;
-    font-family: 'Inter', monospace;
-    letter-spacing: 1px;
-}
-
-/* ── HISTORY ── */
-.tr-hist {
-    background: #080808;
-    border: 1px solid #0e0e0e;
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-bottom: 6px;
-    transition: border-color 0.15s;
-    cursor: default;
-}
-.tr-hist:hover { border-color: #161616; }
-.tr-hist-q {
-    font-size: 12px;
-    color: #2e2e2e;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 3px;
-}
-.tr-hist-meta {
-    font-size: 9px;
-    color: #1a1a1a;
-    letter-spacing: 1px;
-    font-family: 'Inter', monospace;
-}
-
-/* ── EMPTY STATE ── */
-.tr-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 65vh;
-    text-align: center;
-    gap: 1rem;
-}
-.tr-empty-icon {
-    font-size: 24px;
-    color: #111;
-}
-.tr-empty-text {
-    font-size: 10px;
-    color: #1a1a1a;
-    letter-spacing: 3px;
-    line-height: 2.5;
-    text-transform: uppercase;
-    font-family: 'Inter', monospace;
-}
-
-/* ── COPY ── */
-.tr-copy-ok {
-    font-size: 10px;
-    color: #4ade80;
-    letter-spacing: 1.5px;
-    margin-top: 6px;
-    font-family: 'Inter', monospace;
-}
-
-/* ── DIVIDER ── */
-.tr-div { border: none; border-top: 1px solid #0a0a0a; margin: 1.8rem 0; }
-
-/* ── COPY BTN OVERRIDE ── */
-div[data-testid="column"].copy-col .stButton > button {
-    background: #111 !important;
-    color: #555 !important;
-    border: 1px solid #161616 !important;
-    font-size: 10px !important;
-}
-div[data-testid="column"].copy-col .stButton > button:hover {
-    background: #161616 !important;
-    color: #888 !important;
-}
-
-/* ── SPINNER ── */
-.stSpinner > div { border-top-color: #2a2a2a !important; }
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 2px; }
-::-webkit-scrollbar-track { background: #050505; }
-::-webkit-scrollbar-thumb { background: #111; border-radius: 2px; }
-</style>
-""", unsafe_allow_html=True)
-
-
-# ════════════════════════════════════════════════════════════
-# DeepSeek
-# ════════════════════════════════════════════════════════════
-DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
-
-SYSTEM_PROMPT = """你是一个专业的外贸B2B销售客服，帮助外贸公司回复海外买家。
-
-任务：
-1. 分析客户消息意图
-2. 用专业自然有销售力的英文回复
-3. 回复像真人外贸销售，不像AI
-4. 每次回复推进成交
-
-回复规则：
-- 问价格 → 感谢+询问产品/数量/规格+承诺快速报价
-- 抱怨 → 感谢反馈+询问具体问题+提出解决方案
-- 问交期 → 给时间范围+询问数量和目的地
-- 问定制 → 支持定制+询问logo/尺寸/材质/数量
-- 跟进 → 感谢耐心+询问具体订单
-- 其他 → 引导获取更多信息
-
-必须返回JSON格式：
+Return ONLY this JSON (no markdown, no extra text):
 {
-  "intent_label": "意图（中英双语，如：💰 询价 · Pricing）",
-  "reply": "专业英文回复",
-  "tips": ["建议1", "建议2", "建议3", "建议4"]
-}
+  "intent_label": "intent in format: emoji EN · CN (e.g. 💰 Pricing · 询价)",
+  "reply": "your professional reply in English",
+  "tips": ["actionable follow-up tip 1 in Chinese", "tip 2", "tip 3", "tip 4"]
+}"""
 
-只返回JSON，不要其他内容。"""
+SYSTEM_PROMPT_CN = """你是一位拥有10年以上经验的顶级外贸B2B销售客服，专门服务来自欧洲、北美、东南亚、中东的海外买家。
+
+你的风格：热情、自信、专业，每次回复都在悄悄推进成交，但不会让客户感到压力。
+
+你的目标：把每一条客户消息都变成离签单更近一步的机会。
+
+每次回复规则：
+1. 用真诚的热情开头，针对客户的具体情况，绝不用套话
+2. 直接解决客户的问题或需求
+3. 必须问1-2个能推进销售的问题（获取信息+引导成交）
+4. 以明确的行动呼吁结尾
+5. 听起来像真人销售，不像AI或模板
+
+意图处理策略：
+- 询价：感谢→询问产品/数量/规格→承诺快速报价→暗示竞争优势
+- 抱怨：真诚共情→询问具体情况→提出具体解决方案→转化为留存机会
+- 交期：给出实际时间→询问目的地+数量→提供运输选项→适当制造紧迫感
+- 定制：表现热情→询问logo/尺寸/材质/数量→推荐先打样→引导完成流程
+- 跟进：表现出记得他们→给出具体进展→推进下一步→不让对话冷掉
+- 售后：真诚道歉→索取证据→提出公平解决方案→保护客户关系
+- 产品：描绘产品价值→询问用途→推荐具体型号→引向报价
+
+只返回以下JSON格式（不要markdown，不要多余内容）：
+{
+  "intent_label": "意图标签格式：emoji 英文 · 中文（如：💰 Pricing · 询价）",
+  "reply": "专业英文回复内容",
+  "tips": ["中文跟进建议1", "建议2", "建议3", "建议4"]
+}"""
+
+def get_system_prompt(lang='auto', customer_msg=''):
+    """根据语言选择system prompt"""
+    if lang == 'cn':
+        return SYSTEM_PROMPT_CN
+    elif lang == 'en':
+        return SYSTEM_PROMPT_EN
+    else:
+        # 自动检测：如果消息包含中文字符，用中文prompt
+        if any('\u4e00' <= c <= '\u9fff' for c in customer_msg):
+            return SYSTEM_PROMPT_CN
+        return SYSTEM_PROMPT_EN
 
 
-def call_deepseek(msg: str) -> dict:
+# ── 主要API：生成回复 ──
+@app.route('/api/reply', methods=['POST'])
+def generate_reply():
     try:
+        data = request.json
+        msg = data.get('message', '').strip()
+        lang = data.get('lang', 'auto')
+        user_id = data.get('user_id', None)
+
+        if not msg:
+            return jsonify({'error': '消息不能为空'}), 400
+
+        # 获取合适的system prompt
+        system_prompt = get_system_prompt(lang, msg)
+
         client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
         resp = client.chat.completions.create(
             model="deepseek-chat",
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user",   "content": f"客户消息：{msg}"}
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Customer message: {msg}"}
             ],
-            max_tokens=1000,
-            temperature=0.7,
+            max_tokens=1200,
+            temperature=0.8,
         )
+
         raw = resp.choices[0].message.content.strip()
-        raw = raw.replace("```json","").replace("```","").strip()
-        data = json.loads(raw)
-        return {
-            "intent_label": data.get("intent_label","💬 咨询 · General"),
-            "reply":        data.get("reply",""),
-            "tips":         data.get("tips",[]),
-        }
+        raw = raw.replace("```json", "").replace("```", "").strip()
+        result = json.loads(raw)
+
+        # 保存到历史记录
+        if user_id:
+            try:
+                conn = sqlite3.connect('/root/tradereply.db')
+                c = conn.cursor()
+                c.execute('''INSERT INTO history 
+                    (user_id, customer_msg, intent_label, reply, tips, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)''',
+                    (user_id, msg, result.get('intent_label',''),
+                     result.get('reply',''),
+                     json.dumps(result.get('tips',[])),
+                     datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                conn.commit()
+                conn.close()
+            except:
+                pass
+
+        return jsonify(result)
+
+    except json.JSONDecodeError:
+        # JSON解析失败，返回原始文本
+        return jsonify({
+            'intent_label': '💬 General · 咨询',
+            'reply': raw if 'raw' in dir() else 'Sorry, please try again.',
+            'tips': ['重新尝试', '检查网络连接']
+        })
     except Exception as e:
-        return {
-            "intent_label": "⚠️ 错误",
-            "reply": f"API错误：{str(e)}",
-            "tips": [],
-        }
+        return jsonify({'error': str(e)}), 500
 
 
-def generate_reply(msg: str) -> dict:
-    if not DEEPSEEK_API_KEY:
-        return {"intent_label":"⚠️ 未配置","reply":"请配置 DEEPSEEK_API_KEY","tips":[]}
-    return call_deepseek(msg)
+# ── 用户注册 ──
+@app.route('/api/register', methods=['POST'])
+def register():
+    try:
+        data = request.json
+        email = data.get('email', '').strip()
+        password = data.get('password', '').strip()
+
+        if not email or not password:
+            return jsonify({'error': '邮箱和密码不能为空'}), 400
+
+        hashed = hashlib.sha256(password.encode()).hexdigest()
+
+        conn = sqlite3.connect('/root/tradereply.db')
+        c = conn.cursor()
+        try:
+            c.execute('''INSERT INTO users (email, password, plan, daily_count, last_reset, created_at)
+                VALUES (?, ?, 'free', 0, ?, ?)''',
+                (email, hashed,
+                 datetime.now().strftime('%Y-%m-%d'),
+                 datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            conn.commit()
+            user_id = c.lastrowid
+            conn.close()
+            return jsonify({'success': True, 'user_id': user_id, 'email': email, 'plan': 'free'})
+        except sqlite3.IntegrityError:
+            conn.close()
+            return jsonify({'error': '该邮箱已注册'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
-# ── Session ──
-for k,v in [("history",[]),("result",None),("copied",False)]:
-    if k not in st.session_state: st.session_state[k] = v
+# ── 用户登录 ──
+@app.route('/api/login', methods=['POST'])
+def login():
+    try:
+        data = request.json
+        email = data.get('email', '').strip()
+        password = data.get('password', '').strip()
 
+        hashed = hashlib.sha256(password.encode()).hexdigest()
 
-# ════════════════════════════════════════════════════════════
-# UI
-# ════════════════════════════════════════════════════════════
-st.markdown("""
-<div class="tr-topbar">
-  <div class="tr-logo">
-    <div class="tr-logo-dot"></div>
-    TradeReply AI
-  </div>
-  <div style="display:flex;align-items:center;gap:2rem">
-    <div class="tr-logo-sub">外贸客服智能体</div>
-    <div class="tr-status"><div class="tr-status-dot"></div>DEEPSEEK · LIVE</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+        conn = sqlite3.connect('/root/tradereply.db')
+        c = conn.cursor()
+        c.execute('SELECT id, email, plan, daily_count FROM users WHERE email=? AND password=?',
+                  (email, hashed))
+        user = c.fetchone()
+        conn.close()
 
-left, right = st.columns([1, 1.2], gap="small")
-
-# ── LEFT ──
-with left:
-    st.markdown('<div style="padding:2.5rem 2rem">', unsafe_allow_html=True)
-
-    st.markdown('<div class="tr-label">客户消息 · Input</div>', unsafe_allow_html=True)
-    inp = st.text_area(
-        label="i", label_visibility="collapsed",
-        placeholder="粘贴客户消息（中英文均可）...",
-        height=210, key="inp",
-    )
-
-    c1, c2 = st.columns([3,1])
-    with c1:
-        gen = st.button("✦  生成专业回复", use_container_width=True)
-    with c2:
-        clr = st.button("清空", use_container_width=True)
-
-    if clr:
-        st.session_state.result = None
-        st.session_state.copied = False
-        st.rerun()
-
-    if gen:
-        if not inp.strip():
-            st.warning("请输入客户消息")
+        if user:
+            return jsonify({
+                'success': True,
+                'user_id': user[0],
+                'email': user[1],
+                'plan': user[2],
+                'daily_count': user[3]
+            })
         else:
-            with st.spinner(""):
-                r = generate_reply(inp.strip())
-                st.session_state.result = r
-                st.session_state.copied = False
-                st.session_state.history.insert(0,{
-                    "time": datetime.now().strftime("%H:%M"),
-                    "msg":  inp.strip()[:55],
-                    "intent": r["intent_label"],
-                })
-                st.session_state.history = st.session_state.history[:5]
-
-    if st.session_state.history:
-        st.markdown('<hr class="tr-div">', unsafe_allow_html=True)
-        st.markdown('<div class="tr-label">最近记录 · History</div>', unsafe_allow_html=True)
-        for rec in st.session_state.history:
-            st.markdown(f"""
-            <div class="tr-hist">
-              <div class="tr-hist-q">"{rec['msg']}{'…' if len(rec['msg'])>=55 else ''}"</div>
-              <div class="tr-hist-meta">{rec['time']} · {rec['intent']}</div>
-            </div>""", unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
+            return jsonify({'error': '邮箱或密码错误'}), 401
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
-# ── RIGHT ──
-with right:
-    st.markdown('<div style="padding:2.5rem 2.5rem;background:#030303;min-height:calc(100vh - 52px)">', unsafe_allow_html=True)
-    res = st.session_state.result
+# ── 获取历史记录 ──
+@app.route('/api/history/<int:user_id>', methods=['GET'])
+def get_history(user_id):
+    try:
+        conn = sqlite3.connect('/root/tradereply.db')
+        c = conn.cursor()
+        c.execute('''SELECT id, customer_msg, intent_label, reply, tips, created_at
+            FROM history WHERE user_id=?
+            ORDER BY created_at DESC LIMIT 20''', (user_id,))
+        rows = c.fetchall()
+        conn.close()
 
-    if res is None:
-        st.markdown("""
-        <div class="tr-empty">
-          <div class="tr-empty-icon">✦</div>
-          <div class="tr-empty-text">
-            输入客户消息<br>
-            点击生成按钮<br>
-            AI 实时生成回复
-          </div>
-        </div>""", unsafe_allow_html=True)
-    else:
-        st.markdown('<div class="tr-label">意图识别 · Intent</div>', unsafe_allow_html=True)
-        st.markdown(f"""
-        <div class="tr-intent">
-          <div class="i-dot"></div>
-          {res['intent_label']}
-        </div>""", unsafe_allow_html=True)
+        history = []
+        for row in rows:
+            history.append({
+                'id': row[0],
+                'customer_msg': row[1],
+                'intent_label': row[2],
+                'reply': row[3],
+                'tips': json.loads(row[4]) if row[4] else [],
+                'created_at': row[5]
+            })
+        return jsonify({'history': history})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-        st.markdown('<div class="tr-label">英文回复 · Reply</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="tr-reply">{res["reply"]}</div>', unsafe_allow_html=True)
 
-        cp1, _ = st.columns([1, 2])
-        with cp1:
-            if st.button("📋  复制回复", key="cp", use_container_width=True):
-                st.session_state.copied = True
-        if st.session_state.copied:
-            safe = res["reply"].replace("`","\\`").replace("\n","\\n")
-            st.markdown(f"""
-            <script>
-            (function(){{
-              navigator.clipboard.writeText(`{safe}`).catch(function(){{
-                var e=document.createElement('textarea');
-                e.value=`{safe}`;
-                document.body.appendChild(e);
-                e.select();
-                document.execCommand('copy');
-                document.body.removeChild(e);
-              }});
-            }})();
-            </script>
-            <div class="tr-copy-ok">✓ copied</div>""", unsafe_allow_html=True)
+# ── 检查使用次数 ──
+@app.route('/api/check-limit', methods=['POST'])
+def check_limit():
+    try:
+        data = request.json
+        user_id = data.get('user_id')
 
-        if res.get("tips"):
-            st.markdown('<hr class="tr-div">', unsafe_allow_html=True)
-            st.markdown('<div class="tr-label">跟进建议 · Next Steps</div>', unsafe_allow_html=True)
-            st.markdown('<div class="tr-tips">', unsafe_allow_html=True)
-            for i, tip in enumerate(res["tips"], 1):
-                st.markdown(f"""
-                <div class="tr-tip">
-                  <span class="tr-tip-n">0{i}</span>
-                  <span>{tip}</span>
-                </div>""", unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+        if not user_id:
+            # 未登录用户：用IP限制（简单版）
+            return jsonify({'can_use': True, 'remaining': 5, 'plan': 'guest'})
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        conn = sqlite3.connect('/root/tradereply.db')
+        c = conn.cursor()
+        c.execute('SELECT plan, daily_count, last_reset FROM users WHERE id=?', (user_id,))
+        user = c.fetchone()
+
+        if not user:
+            conn.close()
+            return jsonify({'error': '用户不存在'}), 404
+
+        plan, daily_count, last_reset = user
+        today = datetime.now().strftime('%Y-%m-%d')
+
+        # 重置每日计数
+        if last_reset != today:
+            c.execute('UPDATE users SET daily_count=0, last_reset=? WHERE id=?', (today, user_id))
+            conn.commit()
+            daily_count = 0
+
+        conn.close()
+
+        # 限制规则
+        limits = {'free': 10, 'pro': 99999, 'lifetime': 99999}
+        limit = limits.get(plan, 10)
+        remaining = max(0, limit - daily_count)
+
+        return jsonify({
+            'can_use': remaining > 0,
+            'remaining': remaining,
+            'plan': plan,
+            'daily_count': daily_count
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ── 增加使用次数 ──
+@app.route('/api/increment', methods=['POST'])
+def increment():
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        if user_id:
+            conn = sqlite3.connect('/root/tradereply.db')
+            c = conn.cursor()
+            c.execute('UPDATE users SET daily_count=daily_count+1 WHERE id=?', (user_id,))
+            conn.commit()
+            conn.close()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)
